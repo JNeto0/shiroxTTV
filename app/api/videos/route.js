@@ -12,7 +12,12 @@ const redis = new Redis({
 export async function GET() {
   try {
     const queue = await redis.lrange(QUEUE_KEY, 0, -1);
-    const parsedQueue = queue.map(item => JSON.parse(item));
+    const parsedQueue = queue.map(item => {
+      if (typeof item === 'string') {
+        return JSON.parse(item);
+      }
+      return item;
+    });
     return NextResponse.json(parsedQueue);
   } catch (error) {
     console.error('Erro ao buscar fila:', error);
@@ -67,7 +72,12 @@ export async function PATCH(request) {
     const { id, reacted } = await request.json();
 
     const queue = await redis.lrange(QUEUE_KEY, 0, -1);
-    const parsedQueue = queue.map(item => JSON.parse(item));
+    const parsedQueue = queue.map(item => {
+      if (typeof item === 'string') {
+        return JSON.parse(item);
+      }
+      return item;
+    });
 
     const index = parsedQueue.findIndex(item => item.id === id);
     if (index === -1) {
@@ -82,7 +92,7 @@ export async function PATCH(request) {
     // Limpar e reescrever fila
     await redis.del(QUEUE_KEY);
     for (const item of parsedQueue) {
-      await redis.rpush(QUEUE_KEY, JSON.stringify(item));
+      await redis.lpush(QUEUE_KEY, JSON.stringify(item));
     }
     await redis.expire(QUEUE_KEY, TTL_SECONDS);
 
@@ -101,7 +111,12 @@ export async function DELETE(request) {
     const { id } = await request.json();
 
     const queue = await redis.lrange(QUEUE_KEY, 0, -1);
-    const parsedQueue = queue.map(item => JSON.parse(item));
+    const parsedQueue = queue.map(item => {
+      if (typeof item === 'string') {
+        return JSON.parse(item);
+      }
+      return item;
+    });
 
     const filteredQueue = parsedQueue.filter(item => item.id !== id);
 
