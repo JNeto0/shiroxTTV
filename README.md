@@ -2,46 +2,53 @@
 
 Plataforma para gerenciar fila de vídeos do Instagram e TikTok para reação ao vivo.
 
-## 🚀 Setup Vercel KV (Persistência)
+## 🚀 Setup Upstash Redis (Persistência)
 
-### Passo 1: Criar Database KV no Vercel
+### Passo 1: Integrar Upstash no Vercel
 
-1. Acesse [https://vercel.com/dashboard](https://vercel.com/dashboard)
-2. Selecione seu projeto **shiroxTTV**
-3. Vá para a aba **Storage**
-4. Clique em **Create** → **KV**
-5. Nome: `shirox-queue`
-6. Copie as credenciais
+1. Acesse [https://vercel.com/integrations/upstash](https://vercel.com/integrations/upstash)
+2. Clique em **Add Integration**
+3. Selecione seu projeto **shiroxTTV**
+4. Clique em **Connect**
 
-### Passo 2: Adicionar Variáveis de Ambiente
+### Passo 2: Criar Database Redis
 
-1. Na página do projeto, vá para **Settings** → **Environment Variables**
-2. Adicione estas 4 variáveis (copie do painel KV):
-   - `KV_URL`
-   - `KV_REST_API_URL`
-   - `KV_REST_API_TOKEN`
-   - `KV_REST_API_READ_ONLY_TOKEN`
+1. Após integrar, vá para https://console.upstash.com
+2. Clique em **Redis** → **Create Database**
+3. Preencha:
+   - **Name**: `shirox-queue`
+   - **Region**: Escolha a mais próxima (São Paulo)
+4. Clique **Create**
 
-3. Também adicione localmente no arquivo `.env.local`
+### Passo 3: Copiar Credenciais
 
-### Passo 3: Deploy
+1. Na página do database, procure por:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+2. Copie essas 2 credenciais
 
-```bash
-npm install
-npm run build
-vercel deploy
-```
+### Passo 4: Adicionar no Vercel
 
-Ou empurre o commit:
-```bash
-git add .
-git commit -m "Setup Vercel KV"
-git push origin master
-```
+1. Vá para seu projeto no Vercel
+2. **Settings** → **Environment Variables**
+3. Cole as 2 credenciais:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+4. Selecione **Production** e **Preview**
+5. Clique **Add**
+
+### Passo 5: Redeploy
+
+1. Vá para **Deployments**
+2. Clique no último deploy
+3. Clique em **...**
+4. Selecione **Redeploy**
+
+---
 
 ## 🎯 Features
 
-✅ Fila de vídeos persistente (Vercel KV)
+✅ Fila de vídeos persistente (Upstash Redis)
 ✅ Suporte Instagram & TikTok
 ✅ Player integrado
 ✅ Marcar como reagido
@@ -89,10 +96,8 @@ npm run lint
 Adicionar no `.env.local`:
 
 ```env
-KV_URL=<sua_url_kv>
-KV_REST_API_URL=<sua_api_url>
-KV_REST_API_TOKEN=<seu_token>
-KV_REST_API_READ_ONLY_TOKEN=<seu_token_readonly>
+UPSTASH_REDIS_REST_URL=<sua_url>
+UPSTASH_REDIS_REST_TOKEN=<seu_token>
 ```
 
 ## 🎨 Customização
@@ -110,7 +115,7 @@ Estilos CSS em `app/globals.css` com variáveis:
 
 ## 🆘 Troubleshooting
 
-**Erro: "Can't reach KV"**
+**Erro: "Can't connect to Redis"**
 - Verifique variáveis de ambiente
 - Redeploy no Vercel
 
